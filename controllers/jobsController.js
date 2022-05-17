@@ -18,6 +18,7 @@ const createJob = async (req, res) => {
   const job = await Job.create(req.body)
   res.status(StatusCodes.CREATED).json({ job })
 }
+
 const getAllJobs = async (req, res) => {
   const { status, jobType, sort, search } = req.query
 
@@ -92,6 +93,7 @@ const updateJob = async (req, res) => {
   })
 
   res.status(StatusCodes.OK).json({ updatedJob })
+  
 }
 const deleteJob = async (req, res) => {
   const { id: jobId } = req.params
@@ -109,6 +111,9 @@ const deleteJob = async (req, res) => {
   res.status(StatusCodes.OK).json({ msg: 'Success! Job removed' })
 }
 const showStats = async (req, res) => {
+  // console.log(req);
+  // console.log(req.user.userId);
+
   let stats = await Job.aggregate([
     { $match: { createdBy: mongoose.Types.ObjectId(req.user.userId) } },
     { $group: { _id: '$status', count: { $sum: 1 } } },

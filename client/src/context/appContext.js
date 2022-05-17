@@ -64,11 +64,13 @@ const initialState = {
   searchType: 'all',
   sort: 'latest',
   sortOptions: ['latest', 'oldest', 'a-z', 'z-a'],
+  getUserDetails: [],
 }
 
 const AppContext = React.createContext()
 
 const AppProvider = ({ children }) => {
+  
   const [state, dispatch] = useReducer(reducer, initialState)
 
   // axios
@@ -124,25 +126,62 @@ const AppProvider = ({ children }) => {
     localStorage.removeItem('location')
   }
 
-  const setupUser = async ({ currentUser, endPoint, alertText }) => {
+  const setupUser = async ({ currentUser , alertText }) => {
+   
     dispatch({ type: SETUP_USER_BEGIN })
     try {
-      const { data } = await axios.post(`/api/v1/auth/${endPoint}`, currentUser)
+      
+      const { data } = await axios.post(`/api/v1/user/register`, currentUser)
 
-      const { user, token, location } = data
+      const { user , token, location } = data
+
       dispatch({
         type: SETUP_USER_SUCCESS,
         payload: { user, token, location, alertText },
       })
+
+
       addUserToLocalStorage({ user, token, location })
+
     } catch (error) {
       dispatch({
         type: SETUP_USER_ERROR,
         payload: { msg: error.response.data.msg },
       })
     }
+
     clearAlert()
+
   }
+
+  const loginUser = async ({ currentUser , alertText }) => {
+   
+    dispatch({ type: SETUP_USER_BEGIN })
+    try {
+      
+      const { data } = await axios.post(`/api/v1/auth/testLogin`, currentUser)
+
+      const { user , token, location } = data
+
+      dispatch({
+        type: SETUP_USER_SUCCESS,
+        payload: { user, token, location, alertText },
+      })
+
+
+      addUserToLocalStorage({ user, token, location })
+
+    } catch (error) {
+      dispatch({
+        type: SETUP_USER_ERROR,
+        payload: { msg: error.response.data.msg },
+      })
+    }
+
+    clearAlert()
+
+  }
+
   const toggleSidebar = () => {
     dispatch({ type: TOGGLE_SIDEBAR })
   }
@@ -151,10 +190,12 @@ const AppProvider = ({ children }) => {
     dispatch({ type: LOGOUT_USER })
     removeUserFromLocalStorage()
   }
+  
   const updateUser = async (currentUser) => {
+
     dispatch({ type: UPDATE_USER_BEGIN })
     try {
-      const { data } = await authFetch.patch('/auth/updateUser', currentUser)
+      const { data } = await authFetch.post('/user/updateUser', currentUser)
 
       const { user, location, token } = data
 
@@ -171,15 +212,19 @@ const AppProvider = ({ children }) => {
         })
       }
     }
+
     clearAlert()
+    
   }
 
   const handleChange = ({ name, value }) => {
     dispatch({ type: HANDLE_CHANGE, payload: { name, value } })
   }
+
   const clearValues = () => {
     dispatch({ type: CLEAR_VALUES })
   }
+
   const createJob = async () => {
     dispatch({ type: CREATE_JOB_BEGIN })
     try {
@@ -204,6 +249,7 @@ const AppProvider = ({ children }) => {
   }
 
   const getJobs = async () => {
+
     const { page, search, searchStatus, searchType, sort } = state
 
     let url = `/jobs?page=${page}&status=${searchStatus}&jobType=${searchType}&sort=${sort}`
@@ -219,7 +265,7 @@ const AppProvider = ({ children }) => {
         payload: {
           jobs,
           totalJobs,
-          numOfPages,
+          numOfPages, 
         },
       })
     } catch (error) {
@@ -231,6 +277,7 @@ const AppProvider = ({ children }) => {
   const setEditJob = (id) => {
     dispatch({ type: SET_EDIT_JOB, payload: { id } })
   }
+
   const editJob = async () => {
     dispatch({ type: EDIT_JOB_BEGIN })
 
@@ -254,6 +301,7 @@ const AppProvider = ({ children }) => {
     }
     clearAlert()
   }
+
   const deleteJob = async (jobId) => {
     dispatch({ type: DELETE_JOB_BEGIN })
     try {
@@ -263,6 +311,7 @@ const AppProvider = ({ children }) => {
       logoutUser()
     }
   }
+
   const showStats = async () => {
     dispatch({ type: SHOW_STATS_BEGIN })
     try {
@@ -279,12 +328,44 @@ const AppProvider = ({ children }) => {
     }
     clearAlert()
   }
+
+  const getUserDataByID = async (email , type) => {
+
+    console.log("run get user by id method " + email +" "+type);
+    try {
+
+
+      const { data }  = await authFetch.post('/user/getUserByID', {
+          email,
+          type
+      })
+
+      const { getData } = data;
+     // console.log(getData);
+     return getData;
+     // this.getUserDetails = getData;
+      
+
+    } catch (error) {
+      console.log(error);
+     // if (error.response.status === 401) return
+      // dispatch({
+      //   type: CREATE_JOB_ERROR,
+      //   payload: { msg: error.response.data.msg },
+      // })
+    }    
+
+
+  }
+
   const clearFilters = () => {
     dispatch({ type: CLEAR_FILTERS })
   }
+
   const changePage = (page) => {
     dispatch({ type: CHANGE_PAGE, payload: { page } })
   }
+
   return (
     <AppContext.Provider
       value={{
@@ -304,6 +385,8 @@ const AppProvider = ({ children }) => {
         showStats,
         clearFilters,
         changePage,
+        loginUser,
+        getUserDataByID
       }}
     >
       {children}

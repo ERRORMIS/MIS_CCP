@@ -3,6 +3,7 @@ import { Logo, FormRow, Alert } from '../components'
 import Wrapper from '../assets/wrappers/RegisterPage'
 import { useAppContext } from '../context/appContext'
 import { useNavigate ,Link} from 'react-router-dom'
+
 const initialState = {
   name: '',
   email: '',
@@ -11,41 +12,30 @@ const initialState = {
 }
 
 const Register = () => {
+  
   const navigate = useNavigate()
   const [values, setValues] = useState(initialState)
-  const { user, isLoading, showAlert, displayAlert, setupUser } =
-    useAppContext()
+  const { user, isLoading, showAlert, displayAlert, loginUser } = useAppContext() 
 
-  const toggleMember = () => {
-    setValues({ ...values, isMember: !values.isMember })
-  }
-
-  
   const handleChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value })
   }
+
   const onSubmit = (e) => {
+
     e.preventDefault()
-    const { name, email, password, isMember } = values
-    if (!email || !password || (!isMember && !name)) {
+    const { email, password } = values
+    if (!email || !password) {
       displayAlert()
       return
     }
-    const currentUser = { name, email, password }
-    if (isMember) {
-      setupUser({
+    const currentUser = { email, password }
+
+      loginUser({
         currentUser,
-        endPoint: 'login',
         alertText: 'Login Successful! Redirecting...',
       })
- 
-    } else {
-      setupUser({
-        currentUser,
-        endPoint: 'register',
-        alertText: 'User Created! Redirecting...',
-      })
-    }
+
   }
 
   useEffect(() => {
@@ -62,16 +52,6 @@ const Register = () => {
         <Logo />
         <h3>{values.isMember ? 'Login' : 'Register'}</h3>
         {showAlert && <Alert />}
-        {/* name input */}
-        {!values.isMember && (
-          <FormRow
-            type='text'
-            name='name'
-            value={values.name}
-            handleChange={handleChange}
-          />
-        )}
-
         {/* email input */}
         <FormRow
           type='email'
@@ -90,7 +70,7 @@ const Register = () => {
           submit
         </button>
         <br></br>
-         <Link to="/forgotpassword" className="login-screen__forgotpassword"tabIndex ={4}>
+        <Link to="/forgotpassword" className="login-screen__forgotpassword" tabIndex ={4}>
               Forgot Password?
         </Link> 
         <br></br>
@@ -101,10 +81,14 @@ const Register = () => {
           </button> */}
 
           <br></br>
-          {values.isMember ? 'Not a member yet?' : 'Already a member?'}
+          {/* {values.isMember ? 'Not a member yet?' : 'Already a member?'}
           <button type='button' onClick={toggleMember} className='member-btn'>
             {values.isMember ? 'Register' : 'Login'}
-          </button>
+          </button> */}
+          Not a member yet?
+          <Link to="/register" className="login-screen__forgotpassword" tabIndex ={4}>
+              Register
+          </Link> 
         </p>
       </form>
     </Wrapper>

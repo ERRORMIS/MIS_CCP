@@ -3,6 +3,10 @@ import { MdQueryStats } from 'react-icons/md'
 import { FaWpforms } from 'react-icons/fa'
 import { ImProfile } from 'react-icons/im'
 //import Faculty from '../pages/dashboard/Faculty'
+import { useAppContext } from '../context/appContext'
+
+// const { toggleSidebar, logoutUser, user } = useAppContext();
+
 
 const links = [
   { id: 1, text: 'stats', path: '/', icon: <IoBarChartSharp /> },

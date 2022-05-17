@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Register, Landing, Error, ProtectedRoute } from "./pages";
+import { Register, Landing, Error, ProtectedRoute, RegisterPage } from "./pages";
 import {
   AllJobs,
   Profile,
   SharedLayout,
-  Stats,
+  Stats, 
   AddJob,
 } from "./pages/dashboard";
 import AcademicStaff from "./pages/dashboard/AcademicStaff";
@@ -30,7 +30,8 @@ function App() {
           <Route path="faculty" element={<Faculty />} />
           <Route path="academic-staff" element={<AcademicStaff />} />
         </Route>
-        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={< Register />} />
+        <Route path="/register" element={< RegisterPage />} />
         <Route path="/landing" element={<Landing />} />
         <Route path="/forgotpassword" element={<ForgotPasswordScreen />} />
         <Route path="/resetpassword" element={<ResetPasswordScreen />} />
